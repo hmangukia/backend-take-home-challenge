@@ -1,13 +1,10 @@
-from typing import Union
-
 from fastapi import FastAPI
-from pydantic import BaseModel
-from sqlmodel import create_engine, SQLModel, Session
+from sqlmodel import SQLModel
 from models import URL, Visits
+from db import engine
+from api.main import api_router
 
 app = FastAPI()
-
-engine = create_engine(f'postgresql://hetalmangukia:postgres@localhost:5432/postgres')
 
 @app.on_event("startup")
 def on_startup():
@@ -16,3 +13,5 @@ def on_startup():
         print("Tables created successfully")
     except Exception as e:
         print(f"Error creating tables: {e}")
+
+app.include_router(api_router)
