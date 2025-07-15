@@ -1,19 +1,7 @@
-from fastapi.testclient import TestClient
-from sqlmodel import SQLModel, Session, create_engine
-from main import app
-from db import get_session
-from models import URL
-
-test_engine = create_engine(
-    "postgresql://hetalmangukia:postgres@localhost:5432/postgres_test",
-    echo=True
-)
-
-SQLModel.metadata.create_all(test_engine)
-
-client = TestClient(app)
+from tests.utils import clear_test_db, client
 
 def test_create_short_url():
+    clear_test_db()
     long_url = "https://example.com"
     response = client.post("/shorten", json={"long_url": long_url})
     data = response.json()
@@ -25,6 +13,7 @@ def test_create_short_url():
 
 
 def test_same_url_returns_same_slug():
+    clear_test_db()
     long_url = "https://example.com"
 
     # First request
