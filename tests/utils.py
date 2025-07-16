@@ -8,10 +8,10 @@ import os
 
 load_dotenv(".env.test")
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 
 test_engine = create_engine(
-    DATABASE_URL,
+    TEST_DATABASE_URL,
     echo=True
 )
 SQLModel.metadata.create_all(test_engine)
