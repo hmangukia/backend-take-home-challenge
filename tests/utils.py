@@ -3,9 +3,15 @@ from fastapi.testclient import TestClient
 from main import app
 from db import get_session
 from models import URL, Visits
+from dotenv import load_dotenv
+import os
+
+load_dotenv(".env.test")
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 test_engine = create_engine(
-    "postgresql://hetalmangukia:postgres@localhost:5432/postgres_test",
+    DATABASE_URL,
     echo=True
 )
 SQLModel.metadata.create_all(test_engine)
