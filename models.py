@@ -20,3 +20,9 @@ class ShortenUrlRequest(BaseModel):
 class ShortenUrlResponse(BaseModel):
     short_url: str
     slug: str
+
+class URLStatsResponse(BaseModel):
+    slug: str
+    long_url: str
+    visits: int
+    last_visit: datetime | None
