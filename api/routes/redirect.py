@@ -15,7 +15,7 @@ def redirect(slug: str, session: Session = Depends(get_session)):
         raise HTTPException(status_code=404, detail="URL not found")
 
     # logs the visit to the database
-    visit = Visits(url_id=url.id, visit_time=datetime.utcnow())
+    visit = Visits(url_id=url.id)
     session.add(visit)
     session.commit()
     session.refresh(visit)
