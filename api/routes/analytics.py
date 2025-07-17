@@ -6,6 +6,7 @@ from sqlalchemy import func
 
 router = APIRouter()
 
+
 @router.get("/stats", response_model=list[URLStatsResponse])
 def get_top_links(number_of_links: int = 10, session: Session = Depends(get_session)):
     urls = session.exec(
@@ -14,7 +15,7 @@ def get_top_links(number_of_links: int = 10, session: Session = Depends(get_sess
             URL.slug,
             URL.long_url,
             func.max(Visits.visit_time).label("last_visit"),
-            func.count(Visits.id).label("visit_count")
+            func.count(Visits.id).label("visit_count"),
         )
         .join(Visits, Visits.url_id == URL.id, isouter=True)
         .group_by(URL.id, URL.slug, URL.long_url, URL.created_at)
@@ -27,7 +28,7 @@ def get_top_links(number_of_links: int = 10, session: Session = Depends(get_sess
             slug=url.slug,
             long_url=url.long_url,
             visits=url.visit_count,
-            last_visit=url.last_visit
+            last_visit=url.last_visit,
         )
         for url in urls
     ]
@@ -41,7 +42,7 @@ def get_url_stats(slug: str, session: Session = Depends(get_session)):
             URL.slug,
             URL.long_url,
             func.max(Visits.visit_time).label("last_visit"),
-            func.count(Visits.id).label("visit_count")
+            func.count(Visits.id).label("visit_count"),
         )
         .where(URL.slug == slug)
         .join(Visits, Visits.url_id == URL.id, isouter=True)
@@ -49,11 +50,13 @@ def get_url_stats(slug: str, session: Session = Depends(get_session)):
     ).first()
 
     if not url:
-        raise HTTPException(status_code=404, detail=f"URL with the slug '{slug}' not found")
+        raise HTTPException(
+            status_code=404, detail=f"URL with the slug '{slug}' not found"
+        )
 
     return URLStatsResponse(
         slug=url.slug,
         long_url=url.long_url,
         visits=url.visit_count,
-        last_visit=url.last_visit
+        last_visit=url.last_visit,
     )

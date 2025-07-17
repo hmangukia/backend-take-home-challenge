@@ -1,5 +1,6 @@
 from tests.utils import clear_test_db, client
 
+
 def test_create_short_url():
     clear_test_db()
     long_url = "https://example.com"
