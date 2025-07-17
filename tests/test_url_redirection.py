@@ -1,9 +1,7 @@
-from fastapi.testclient import TestClient
-from sqlmodel import SQLModel, Session, create_engine, select
-from main import app
-from db import get_session
+from sqlmodel import Session, select
 from models import URL, Visits
 from tests.utils import clear_test_db, client, test_engine
+
 
 def test_redirect_to_long_url_when_slug_exists():
     clear_test_db()
@@ -18,10 +16,12 @@ def test_redirect_to_long_url_when_slug_exists():
 
     response = client.get(f"/{slug}", follow_redirects=False)
     assert response.status_code == 307
-    
+
     # check if the visit is logged in the database
     with Session(test_engine) as session:
-        visits_for_url = session.exec(select(Visits).where(Visits.url_id == url.id)).all()
+        visits_for_url = session.exec(
+            select(Visits).where(Visits.url_id == url.id)
+        ).all()
         assert len(visits_for_url) == 1
         visit_for_url = visits_for_url[0]
         assert visit_for_url is not None

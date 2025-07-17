@@ -10,18 +10,18 @@ load_dotenv(".env.test")
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 
-test_engine = create_engine(
-    TEST_DATABASE_URL,
-    echo=True
-)
+test_engine = create_engine(TEST_DATABASE_URL, echo=True)
 SQLModel.metadata.create_all(test_engine)
+
 
 def override_get_session():
     with Session(test_engine) as session:
         yield session
 
+
 app.dependency_overrides[get_session] = override_get_session
 client = TestClient(app)
+
 
 def clear_test_db():
     with Session(test_engine) as session:
