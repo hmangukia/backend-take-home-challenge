@@ -39,8 +39,10 @@ def shorten(
     while session.exec(select(URL).where(URL.slug == slug)).first():
         slug = generate_slug()
 
+    # We have a "/stats" route that could be mistaken for a slug, but it could never be a slug
+    # as slug will always be 6 characters as it is default length in the generate_slug function.
     # create a new URL object using the generated slug and add it to the database
-    short_url = f"h{request.base_url}{slug}"
+    short_url = f"{request.base_url}{slug}"
     url = URL(long_url=shorten_url_request.long_url, slug=slug)
 
     session.add(url)
