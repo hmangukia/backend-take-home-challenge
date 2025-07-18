@@ -6,7 +6,7 @@ from models import URL, Visits
 from dotenv import load_dotenv
 import os
 
-load_dotenv(".env.test")
+load_dotenv(".env")
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 

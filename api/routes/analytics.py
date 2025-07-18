@@ -8,8 +8,18 @@ router = APIRouter()
 
 
 @router.get("/stats", response_model=list[URLStatsResponse])
-def get_top_links(number_of_links: int = 10, session: Session = Depends(get_session)):
-    urls = session.exec(
+def get_top_urls(number_of_urls: int = 10, session: Session = Depends(get_session)):
+    """
+    Retrieves statistics for the top URLs based on the number of visits.
+
+    Args:
+        number_of_urls (int): The number of top URLs to retrieve, default is 10.
+        session (Session): Database session dependency to access the database.
+
+    Returns:
+        list[URLStatsResponse]: A list of URL statistics sorted by the number of visits in descending order.
+    """
+    query = (
         select(
             URL.id,
             URL.slug,
@@ -20,8 +30,9 @@ def get_top_links(number_of_links: int = 10, session: Session = Depends(get_sess
         .join(Visits, Visits.url_id == URL.id, isouter=True)
         .group_by(URL.id, URL.slug, URL.long_url, URL.created_at)
         .order_by(func.count(Visits.id).desc())
-        .limit(number_of_links)
-    ).all()
+        .limit(number_of_urls)
+    )
+    urls = session.exec(query).all()
 
     return [
         URLStatsResponse(
@@ -35,8 +46,22 @@ def get_top_links(number_of_links: int = 10, session: Session = Depends(get_sess
 
 
 @router.get("/stats/{slug}", response_model=URLStatsResponse)
-def get_url_stats(slug: str, session: Session = Depends(get_session)):
-    url = session.exec(
+def get_url_stats_by_slug(slug: str, session: Session = Depends(get_session)):
+    """
+    Retrieve statistics for a specific URL identified by its slug.
+
+    Args:
+        slug (str): The slug of the URL to retrieve statistics for.
+        session (Session): Database session dependency to access the database.
+
+    Raises:
+        HTTPException: Raises 404 if the URL with the specified slug does not exist.
+
+    Returns:
+        URLStatsResponse: Statistics including slug, original URL, total visits,
+        and time of the last visit.
+    """
+    query = (
         select(
             URL.id,
             URL.slug,
@@ -47,7 +72,8 @@ def get_url_stats(slug: str, session: Session = Depends(get_session)):
         .where(URL.slug == slug)
         .join(Visits, Visits.url_id == URL.id, isouter=True)
         .group_by(URL.id, URL.slug, URL.long_url, URL.created_at)
-    ).first()
+    )
+    url = session.exec(query).first()
 
     if not url:
         raise HTTPException(
