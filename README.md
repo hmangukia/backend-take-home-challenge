@@ -38,3 +38,59 @@ To execute the full test suite inside the container:
 ```
 docker compose exec web pytest
 ```
+
+## Endpoints
+
+- POST `/shorten`
+  - Accepts a long URL and returns a short slug-based URL and the slug. Format as follows:
+  ```
+    {
+       "slug": "abcd123",
+       "short_url": "http://your-service.com/abcd123"
+    }
+  ```
+  - Reuses slug if the same URL is submitted again
+
+- GET `/{slug}`
+  - Redirects to the original long URL
+  - Records visit timestamp corresponding to the URL
+
+- GET `/stats`
+  - Returns top number_of_links (default: 10), ordered by visit count (descending).
+  ```
+  [
+    {
+      "slug": "abcd12",
+      "long_url": "https://www.example.com/...",
+      "visits": 42,
+      "last_visit": "2025-12-01T13:00:00Z"
+    },
+    {
+      "slug": "efgh34",
+      "long_url": "https://www.example.com/other/long/url",
+      "visits": 0,
+      "last_visit": null
+    }
+  ]
+  ```
+
+- GET `/stats/{slug}`
+  - Returns analytics of the slug specified
+  ```
+  {
+    "slug": "abcd12",
+    "long_url": "https://www.example.com/...",
+    "visits": 42,
+    "last_visit": "2025-12-01T13:00:00Z"
+  }
+  ```
+
+## Database Modelling
+
+![Database modelling](./database-modelling.png "Database Modelling")
+
+## URL shortening flow
+![URL shortening flow](./URL-Shortening-Flow.png "URL shortening flow")
+
+## URL redirect flow
+![URL redirect flow](./URL-Redirect-Flow.png "URL redirect flow")
