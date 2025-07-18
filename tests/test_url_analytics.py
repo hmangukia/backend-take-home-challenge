@@ -4,8 +4,8 @@ from tests.utils import clear_test_db, client, test_engine
 import pytest
 
 
-@pytest.mark.parametrize("number_of_links", [None, 1])
-def test_url_analytics(number_of_links):
+@pytest.mark.parametrize("number_of_urls", [None, 1])
+def test_url_analytics(number_of_urls):
     clear_test_db()
     # create two URLs in the database and visit the second one
     with Session(test_engine) as session:
@@ -26,12 +26,12 @@ def test_url_analytics(number_of_links):
         session.refresh(visit)
 
     request_url = (
-        f"/stats?number_of_links={number_of_links}" if number_of_links else "/stats"
+        f"/stats?number_of_urls={number_of_urls}" if number_of_urls else "/stats"
     )
     response = client.get(request_url)
     assert response.status_code == 200
 
-    if number_of_links:
+    if number_of_urls:
         assert response.json() == [
             {
                 "slug": slug_2,
