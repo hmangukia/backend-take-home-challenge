@@ -94,3 +94,7 @@ docker compose exec web pytest
 
 ## URL redirect flow
 ![URL redirect flow](./URL-Redirect-Flow.png "URL redirect flow")
+
+## 🚧 In Progress: Redis Caching
+Redis-based caching is currently being implemented to optimize performance.
+A [draft pull request](https://github.com/hmangukia/backend-take-home-challenge/pull/5) is open.
