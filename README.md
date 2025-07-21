@@ -98,3 +98,7 @@ docker compose exec web pytest
 ## 🚧 In Progress: Redis Caching
 Redis-based caching is currently being implemented to optimize performance.
 A [draft pull request](https://github.com/hmangukia/backend-take-home-challenge/pull/5) is open.
+
+## 🚧 In Progress: AI flyer generation
+As a fun side project and inspired by an idea I briefly discussed during my initial chat with Shardul, I’ve also started experimenting with AI-powered flyer generation. This part is not part of the original take home test, but something I wanted to explore independently.
+A [draft pull request](https://github.com/hmangukia/backend-take-home-challenge/pull/6)
