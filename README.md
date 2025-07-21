@@ -16,14 +16,14 @@ DATABASE_URL=postgresql://username:password@host:port/db_name
 TEST_DATABASE_URL=postgresql://username:password@host:port/test_db_name
 ```
 
-3. Update the user name in DATABASE_URL and TEST_DATABASE_URL, and POSTGRES_USER in docker-compose.yml
+3. Update the user name in `DATABASE_URL` and `TEST_DATABASE_URL`, and `POSTGRES_USER` in `docker-compose.yml`
 
 4. Build and run using docker
 ```
 docker compose build
 docker compose up
-
 ```
+
 5. Run the migrations to create tables
 ```
 alembic upgrade head
@@ -44,10 +44,10 @@ docker compose exec web pytest
 - POST `/shorten`
   - Accepts a long URL and returns a short slug-based URL and the slug. Format as follows:
   ```
-    {
-       "slug": "abcd123",
-       "short_url": "http://your-service.com/abcd123"
-    }
+  {
+     "slug": "abcd123",
+     "short_url": "http://your-service.com/abcd123"
+  }
   ```
   - Reuses slug if the same URL is submitted again
 
@@ -94,3 +94,7 @@ docker compose exec web pytest
 
 ## URL redirect flow
 ![URL redirect flow](./URL-Redirect-Flow.png "URL redirect flow")
+
+## 🚧 In Progress: Redis Caching
+Redis-based caching is currently being implemented to optimize performance.
+A [draft pull request](https://github.com/hmangukia/backend-take-home-challenge/pull/5) is open.
