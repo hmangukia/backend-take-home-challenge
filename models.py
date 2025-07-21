@@ -30,3 +30,8 @@ class URLStatsResponse(BaseModel):
     long_url: str
     visits: int
     last_visit: datetime | None
+
+
+class FlyerRequest(BaseModel):
+    prompt: str
+    custom_text: str
