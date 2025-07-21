@@ -33,8 +33,6 @@ async def redirect_to_long_url(
     # Check if the slug is cached in Redis
     cached_data = await redis_client.get(slug)
     if cached_data:
-        print("---> cached_data", cached_data)
-        print("---> json.loads(cached_data", json.loads(cached_data))
         cached_data = json.loads(cached_data)
         long_url = cached_data["long_url"]
         url_id = cached_data["url_id"]
