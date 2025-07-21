@@ -9,6 +9,7 @@ psycopg2-binary==2.9.9
 python-dotenv==1.0.0
 pytest==8.4.1
 pytest-postgresql==7.0.2
+redis==6.2.0
 ruff==0.12.4
 SQLAlchemy==2.0.41
 sqlmodel==0.0.24
