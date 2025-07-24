@@ -99,6 +99,32 @@ docker compose exec web pytest
 Redis-based caching is currently being implemented to optimize performance.
 A [draft pull request](https://github.com/hmangukia/backend-take-home-challenge/pull/5) is open.
 
-## 🚧 In Progress: AI flyer generation
+## AI flyer generation
 As a fun side project and inspired by an idea I briefly discussed during my initial chat with Shardul, I’ve also started experimenting with AI-powered flyer generation. This part is not part of the original take home test, but something I wanted to explore independently.
-A [draft pull request](https://github.com/hmangukia/backend-take-home-challenge/pull/6)
+
+I'm currently using OpenAI’s GPT-4.1 model for this prototype. A few sample images have been added to the assets folder and are used as visual references in the generation process. The resulting flyer is saved to the root directory as `flyer.png`.
+
+### Sample Prompts & Results:
+
+**Prompt 1**
+> "Design a clean, modern promotional image for our upcoming sale. Match the visual theme and tone of the product images provided. Use soft pastel tones and minimal layout. Do not add any text in the image."
+
+- Result 1:
+![Result 1](./flyer1.png "Result 1")
+- Result 2:
+![Result 2](./flyer2.png "Result 2")
+
+**Prompt 2**
+> "Design a clean, modern promotional image for our upcoming sale. Match the visual theme and tone of the product images provided. Use soft pastel tones and minimal layout. Do not add any text in the image. The center of the image should be light colored/empty so a text can be added on the top."
+- Result:
+![Result 3](./flyer.png "Result 3")
+
+
+Right now, the system uses only three sample product images. In a real world scenario, there could be hundreds of images, and the prompt could include more details about branding and context. This would help generate more accurate and visually appealing flyers.
+
+
+### Future Improvement Ideas:
+- Text overlay support: Add dynamic promotional text (could use Open AI or Pillow)
+  - Editor: Incorporate a visual editor (e.g. Puck) for text overlay
+- User personalization: Tailor flyer content based on customer segments (e.g. sporty vs. elegant, male vs. female).
+- Batch generation: Give users multiple options to choose by generating multiple flyers at once with different designs or product sets
