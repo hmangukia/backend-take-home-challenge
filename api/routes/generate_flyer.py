@@ -1,59 +1,72 @@
 from fastapi import APIRouter
-from fastapi.responses import FileResponse
 from models import FlyerRequest
-from typing import List
-from PIL import Image, ImageDraw, ImageFont
 import os
-import uuid
-import re
+import openai
+import base64
 
 router = APIRouter()
 
 ASSETS_DIR = "assets"
-OUTPUT_DIR = "generated"
-DEFAULT_FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-
-def match_images(prompt: str) -> List[str]:
-    prompt_keywords = re.findall(r"\w+", prompt.lower())
-    selected_images = []
-    for fname in os.listdir(ASSETS_DIR):
-        if not fname.lower().endswith((".png", ".jpg", ".jpeg")):
-            continue
-        for word in prompt_keywords:
-            if word in fname.lower():
-                selected_images.append(os.path.join(ASSETS_DIR, fname))
-                break
-    return selected_images or [
-        os.path.join(ASSETS_DIR, f) for f in os.listdir(ASSETS_DIR)[:3]
-    ]
-
-
-def create_flyer(images: List[str], text: str, output_path: str):
-    base = Image.new("RGB", (800, 1000), "white")
-    y = 20
-    for img_path in images[:3]:
-        try:
-            img = Image.open(img_path).convert("RGB")
-            img.thumbnail((760, 250))
-            base.paste(img, (20, y))
-            y += img.height + 10
-        except Exception as e:
-            print(f"Failed to add image {img_path}: {e}")
-
-    draw = ImageDraw.Draw(base)
-    font = ImageFont.truetype(DEFAULT_FONT, size=30)
-    draw.text((20, y + 20), text, fill="black", font=font)
-
-    base.save(output_path)
-
+def encode_image(file_path):
+    with open(file_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 @router.post("/generate_flyer")
 def generate_flyer(req: FlyerRequest):
-    matched_images = match_images(req.prompt)
-    output_file = os.path.join(OUTPUT_DIR, f"flyer_{uuid.uuid4().hex}.jpg")
-    create_flyer(matched_images, req.custom_text, output_file)
-    return FileResponse(
-        output_file, media_type="image/jpeg", filename=os.path.basename(output_file)
+    """
+    Generates a flyer image based on the prompt and the product images provided.
+    Example prompt: Design a clean, modern promotional image for our upcoming sale. Match the visual theme and tone of the product images provided. Use soft pastel tones and minimal layout. Do not add any text in the image.
+    Args:
+        req: FlyerRequest
+    """
+    prompt = req.prompt
+    api_key = os.getenv("OPENAI_API_KEY")
+    client = openai.OpenAI(api_key=api_key)
+
+    image_extensions = (".png", ".gif", ".jpeg", ".webp")
+    image_paths = [
+        os.path.join(ASSETS_DIR, fname)
+        for fname in os.listdir(ASSETS_DIR)
+        if fname.lower().endswith(image_extensions)
+    ]
+
+    content = [{"type": "input_text", "text": prompt}]
+
+    for img_path in image_paths:
+        base64_img = encode_image(img_path)
+        content.append({
+            "type": "input_image",
+            "image_url": f"data:image/png;base64,{base64_img}"
+        })
+
+    response = client.responses.create(
+        model="gpt-4.1",
+        input=[
+            {
+                "role": "user",
+                "content": content
+            }
+        ],
+        tools=[
+            {
+                "type": "image_generation"
+            }
+        ],
     )
+
+    image_generation_calls = [
+        output
+        for output in response.output
+        if output.type == "image_generation_call"
+    ]
+
+    image_data = [output.result for output in image_generation_calls]
+
+    if image_data:
+        image_base64 = image_data[0]
+        with open("flyer.png", "wb") as f:
+            f.write(base64.b64decode(image_base64))
+            print("Flyer saved as flyer.png")
+    else:
+        print(response.output.content)

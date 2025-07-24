@@ -34,4 +34,3 @@ class URLStatsResponse(BaseModel):
 
 class FlyerRequest(BaseModel):
     prompt: str
-    custom_text: str
